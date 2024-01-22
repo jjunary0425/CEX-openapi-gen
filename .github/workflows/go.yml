@@ -35,7 +35,7 @@ jobs:
 
     - name: init
       run: |
-        go mod init github.com/${GITHUB_REPOSITORY}/v1
+        go mod init github.com/${GITHUB_REPOSITORY}
 
     - name: Commit and Push Changes
       run: |
