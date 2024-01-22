@@ -1,0 +1,97 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ticker API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/ticker/{symbol1}/{symbol2}": {
+      "get": {
+        "summary": "Retrieve Ticker Information",
+        "parameters": [
+          {
+            "name": "symbol1",
+            "in": "path",
+            "required": true,
+            "description": "The first currency code",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "symbol2",
+            "in": "path",
+            "required": true,
+            "description": "The second currency code",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ticker"
+                },
+                "example": {
+                  "timestamp": "1513166480",
+                  "low": "17200",
+                  "high": "17920",
+                  "last": "17420",
+                  "volume": "2042.59581123",
+                  "volume30d": "81150.14153359",
+                  "bid": 17400.04,
+                  "ask": 17418.2
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ticker": {
+        "type": "object",
+        "properties": {
+          "bid": {
+            "type": "number",
+            "description": "Highest buy order"
+          },
+          "ask": {
+            "type": "number",
+            "description": "Lowest sell order"
+          },
+          "low": {
+            "type": "string",
+            "description": "Last 24 hours price low"
+          },
+          "high": {
+            "type": "string",
+            "description": "Last 24 hours price high"
+          },
+          "last": {
+            "type": "string",
+            "description": "Last price"
+          },
+          "volume": {
+            "type": "string",
+            "description": "Last 24 hours volume"
+          },
+          "volume30d": {
+            "type": "string",
+            "description": "Last 30 days volume"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Unix timestamp"
+          }
+        }
+      }
+    }
+  }
+}
