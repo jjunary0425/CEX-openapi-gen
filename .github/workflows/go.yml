@@ -25,13 +25,13 @@ jobs:
       run: go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest
 
     - name: create types
-      run: oapi-codegen -generate "types" -package openapi output/openapi.json > type.gen.go
+      run: oapi-codegen -generate "types" -package main output/openapi.json > type.gen.go
 
     - name: create servers
-      run:  oapi-codegen -generate "server" -package openapi output/openapi.json > server.gen.go
+      run:  oapi-codegen -generate "server" -package main output/openapi.json > server.gen.go
 
     - name: create client
-      run:  oapi-codegen -generate "client" -package openapi output/openapi.json > client.gen.go
+      run:  oapi-codegen -generate "client" -package main output/openapi.json > client.gen.go
 
     - name: init
       run: |
