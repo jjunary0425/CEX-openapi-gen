@@ -38,6 +38,7 @@ jobs:
 
     - name: init
       run: |
+        cd openapi
         go mod init github.com/${GITHUB_REPOSITORY}/openapi
 
     - name: Commit and Push Changes
