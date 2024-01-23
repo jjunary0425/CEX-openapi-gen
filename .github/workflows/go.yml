@@ -41,4 +41,14 @@ jobs:
         git add .
         git commit -m "source generation"
         git push
+    
+    - name: Create an incremental release
+      uses: aurestic/incrementarl-create-release@master
+      with:
+        flag_branch: true
+        message: Bump version
+        prev_tag: 'v'
+        update_odoo_module_version: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
