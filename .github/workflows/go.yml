@@ -24,14 +24,21 @@ jobs:
     - name: install oapi-codegen
       run: go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest
 
+    - name: create folder
+      run: mkdir openapi
+
     - name: create types
-      run: oapi-codegen -generate "types" -package main output/openapi.json > type.gen.go
+      run: oapi-codegen -generate "types" -package openapi output/openapi.json > openapi/type.gen.go
 
     - name: create servers
-      run:  oapi-codegen -generate "server" -package main output/openapi.json > server.gen.go
+      run:  oapi-codegen -generate "server" -package openapi output/openapi.json > openapi/server.gen.go
 
     - name: create client
-      run:  oapi-codegen -generate "client" -package main output/openapi.json > client.gen.go
+      run:  oapi-codegen -generate "client" -package openapi output/openapi.json > openapi/client.gen.go
+
+    - name: init
+      run: |
+        go mod init github.com/${GITHUB_REPOSITORY}/openapi
 
     - name: Commit and Push Changes
       run: |
@@ -47,7 +54,7 @@ jobs:
       with:
         flag_branch: true
         message: Bump version
-        prev_tag: 'v'
+        prev_tag: 'v1.0.1'
         update_odoo_module_version: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
