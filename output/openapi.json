@@ -51,6 +51,48 @@
           }
         }
       }
+    },
+    "/api/last_price/{symbol1}/{symbol2}": {
+      "get": {
+        "summary": "Get Last Price",
+        "parameters": [
+          {
+            "name": "symbol1",
+            "in": "path",
+            "required": true,
+            "description": "The first currency code",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "symbol2",
+            "in": "path",
+            "required": true,
+            "description": "The second currency code",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pairPrice"
+                },
+                "example": {
+                  "lprice": "17663",
+                  "curr1": "BTC",
+                  "curr2": "USD"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -89,6 +131,23 @@
           "timestamp": {
             "type": "string",
             "description": "Unix timestamp"
+          }
+        }
+      },
+      "pairPrice": {
+        "type": "object",
+        "properties": {
+          "lprice": {
+            "type": "string",
+            "description": "The last price"
+          },
+          "curr1": {
+            "type": "string",
+            "description": "The first currency code"
+          },
+          "curr2": {
+            "type": "string",
+            "description": "The second currency code"
           }
         }
       }
