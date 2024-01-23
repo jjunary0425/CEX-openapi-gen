@@ -88,8 +88,23 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// GetApiLastPriceSymbol1Symbol2 request
+	GetApiLastPriceSymbol1Symbol2(ctx context.Context, symbol1 string, symbol2 string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiTickerSymbol1Symbol2 request
 	GetApiTickerSymbol1Symbol2(ctx context.Context, symbol1 string, symbol2 string, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) GetApiLastPriceSymbol1Symbol2(ctx context.Context, symbol1 string, symbol2 string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiLastPriceSymbol1Symbol2Request(c.Server, symbol1, symbol2)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) GetApiTickerSymbol1Symbol2(ctx context.Context, symbol1 string, symbol2 string, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -102,6 +117,47 @@ func (c *Client) GetApiTickerSymbol1Symbol2(ctx context.Context, symbol1 string,
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewGetApiLastPriceSymbol1Symbol2Request generates requests for GetApiLastPriceSymbol1Symbol2
+func NewGetApiLastPriceSymbol1Symbol2Request(server string, symbol1 string, symbol2 string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "symbol1", runtime.ParamLocationPath, symbol1)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "symbol2", runtime.ParamLocationPath, symbol2)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/last_price/%s/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 // NewGetApiTickerSymbol1Symbol2Request generates requests for GetApiTickerSymbol1Symbol2
@@ -188,8 +244,33 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// GetApiLastPriceSymbol1Symbol2WithResponse request
+	GetApiLastPriceSymbol1Symbol2WithResponse(ctx context.Context, symbol1 string, symbol2 string, reqEditors ...RequestEditorFn) (*GetApiLastPriceSymbol1Symbol2Response, error)
+
 	// GetApiTickerSymbol1Symbol2WithResponse request
 	GetApiTickerSymbol1Symbol2WithResponse(ctx context.Context, symbol1 string, symbol2 string, reqEditors ...RequestEditorFn) (*GetApiTickerSymbol1Symbol2Response, error)
+}
+
+type GetApiLastPriceSymbol1Symbol2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PairPrice
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiLastPriceSymbol1Symbol2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiLastPriceSymbol1Symbol2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type GetApiTickerSymbol1Symbol2Response struct {
@@ -214,6 +295,15 @@ func (r GetApiTickerSymbol1Symbol2Response) StatusCode() int {
 	return 0
 }
 
+// GetApiLastPriceSymbol1Symbol2WithResponse request returning *GetApiLastPriceSymbol1Symbol2Response
+func (c *ClientWithResponses) GetApiLastPriceSymbol1Symbol2WithResponse(ctx context.Context, symbol1 string, symbol2 string, reqEditors ...RequestEditorFn) (*GetApiLastPriceSymbol1Symbol2Response, error) {
+	rsp, err := c.GetApiLastPriceSymbol1Symbol2(ctx, symbol1, symbol2, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiLastPriceSymbol1Symbol2Response(rsp)
+}
+
 // GetApiTickerSymbol1Symbol2WithResponse request returning *GetApiTickerSymbol1Symbol2Response
 func (c *ClientWithResponses) GetApiTickerSymbol1Symbol2WithResponse(ctx context.Context, symbol1 string, symbol2 string, reqEditors ...RequestEditorFn) (*GetApiTickerSymbol1Symbol2Response, error) {
 	rsp, err := c.GetApiTickerSymbol1Symbol2(ctx, symbol1, symbol2, reqEditors...)
@@ -221,6 +311,32 @@ func (c *ClientWithResponses) GetApiTickerSymbol1Symbol2WithResponse(ctx context
 		return nil, err
 	}
 	return ParseGetApiTickerSymbol1Symbol2Response(rsp)
+}
+
+// ParseGetApiLastPriceSymbol1Symbol2Response parses an HTTP response from a GetApiLastPriceSymbol1Symbol2WithResponse call
+func ParseGetApiLastPriceSymbol1Symbol2Response(rsp *http.Response) (*GetApiLastPriceSymbol1Symbol2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiLastPriceSymbol1Symbol2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PairPrice
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseGetApiTickerSymbol1Symbol2Response parses an HTTP response from a GetApiTickerSymbol1Symbol2WithResponse call

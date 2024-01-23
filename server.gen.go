@@ -13,6 +13,9 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Get Last Price
+	// (GET /api/last_price/{symbol1}/{symbol2})
+	GetApiLastPriceSymbol1Symbol2(ctx echo.Context, symbol1 string, symbol2 string) error
 	// Retrieve Ticker Information
 	// (GET /api/ticker/{symbol1}/{symbol2})
 	GetApiTickerSymbol1Symbol2(ctx echo.Context, symbol1 string, symbol2 string) error
@@ -21,6 +24,30 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// GetApiLastPriceSymbol1Symbol2 converts echo context to params.
+func (w *ServerInterfaceWrapper) GetApiLastPriceSymbol1Symbol2(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "symbol1" -------------
+	var symbol1 string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "symbol1", runtime.ParamLocationPath, ctx.Param("symbol1"), &symbol1)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter symbol1: %s", err))
+	}
+
+	// ------------- Path parameter "symbol2" -------------
+	var symbol2 string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "symbol2", runtime.ParamLocationPath, ctx.Param("symbol2"), &symbol2)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter symbol2: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetApiLastPriceSymbol1Symbol2(ctx, symbol1, symbol2)
+	return err
 }
 
 // GetApiTickerSymbol1Symbol2 converts echo context to params.
@@ -75,6 +102,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.GET(baseURL+"/api/last_price/:symbol1/:symbol2", wrapper.GetApiLastPriceSymbol1Symbol2)
 	router.GET(baseURL+"/api/ticker/:symbol1/:symbol2", wrapper.GetApiTickerSymbol1Symbol2)
 
 }
